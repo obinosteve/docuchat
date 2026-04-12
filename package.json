@@ -1,10 +1,11 @@
 {
   "name": "docuchat",
   "version": "1.0.0",
-  "main": "index.js",
+  "type": "module",
+  "main": "src/server.ts",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
+    "dev": "nodemon --watch src --ext ts,js --exec \"node --experimental-strip-types src/server.ts\"",
+    "start": "node --experimental-strip-types src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,21 +13,30 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.7.0",
     "@prisma/client": "^7.7.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.8.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
     "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
-    "winston": "^3.19.0"
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "winston": "^3.19.0",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "nodemon": "^3.1.14",
     "prisma": "^7.7.0"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
   }
-  
 }

@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 datasource db {
   provider = "sqlite"
@@ -27,6 +26,7 @@ model RefreshToken {
     id String @id @default(uuid())
     userId String
     token String @unique
+    deviceInfo String?
     expiresAt DateTime
     createdAt DateTime @default(now())
 
