@@ -1,6 +1,6 @@
 import { appEvents } from '../lib/events.ts';
 import { prisma } from '../lib/prisma.ts';
-import logger from '../services/logger.service.js';
+import logger from '../services/logger.service.ts';
 
 
 // ── Define the event names as constants ─────────────

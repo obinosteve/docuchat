@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import * as authService from '../services/auth.service.ts';
+import { validate } from '../middleware/validate.ts';
+import { loginSchema, refreshSchema, registerSchema } from '../validators/auth.validator.ts';
 
 const router = Router();
 
@@ -52,7 +54,7 @@ const router = Router();
  *       409:
  *         description: Email already registered
  */
-router.post('/register', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.post('/register', validate(registerSchema), async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const result = await authService.register(req.body);
     res.status(201).json(result);
@@ -112,7 +114,7 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.post('/login', validate(loginSchema), async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   
   try {
     const result = await authService.login(
@@ -160,7 +162,7 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction): P
  *       401:
  *         description: Refresh token is invalid, expired, or revoked
  */
-router.post('/refresh', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.post('/refresh', validate(refreshSchema), async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const result = await authService.refreshToken(req.body.refreshToken);
     res.json(result);

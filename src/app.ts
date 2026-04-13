@@ -3,11 +3,12 @@ import type { Request, Response, NextFunction } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
-import logger from './services/logger.service.js';
+import logger from './services/logger.service.ts';
 import router from './routes/index.ts';
 import './events/auth.events.ts';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.ts';
+import { errorHandler } from './middleware/errorHandler.ts';
 
 const app = express();
 
@@ -37,13 +38,7 @@ app.use((_req: Request, res: Response) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-interface AppError extends Error {
-  status?: number;
-}
-
-app.use((err: AppError, _req: Request, res: Response, _next: NextFunction) => {
-  logger.error(err.message, { stack: err.stack });
-  res.status(err.status || 500).json({ message: err.message });
-});
+// Global error handler (MUST be last)
+app.use(errorHandler);
 
 export default app;

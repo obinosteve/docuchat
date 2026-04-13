@@ -1,5 +1,5 @@
 import app from './app.ts';
-import logger from './services/logger.service.js';
+import logger from './services/logger.service.ts';
 import env from './config/env.js';
 import { prisma } from './lib/prisma.ts';
 

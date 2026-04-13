@@ -1,4 +1,5 @@
 import { AUTH_EVENTS } from '../events/auth.events.ts';
+import { ConflictError, NotFoundError, UnauthorizedError } from '../lib/errors.ts';
 import { appEvents } from '../lib/events.ts';
 import { hashPassword, verifyPassword } from '../lib/password.ts';
 import { prisma } from '../lib/prisma.ts';
@@ -13,7 +14,9 @@ export async function register(data: {
                 where: { email: data.email.toLowerCase().trim() },
             });
 
-    if (existing) throw new Error('Email already registered');
+    if (existing){
+      throw new ConflictError('Email already registered');
+    }
 
     const passwordHash = await hashPassword(data.password);
     
@@ -56,7 +59,7 @@ export async function login(data: {
         reason: 'user_not_found',
       });
       
-      throw new Error('Invalid credentials');
+      throw new UnauthorizedError('Invalid credentials');
     }
 
     const valid = await verifyPassword(data.password, user.passwordHash);
@@ -68,7 +71,7 @@ export async function login(data: {
         reason: 'wrong_password',
       });
 
-      throw new Error('Invalid credentials');
+      throw new UnauthorizedError('Invalid credentials');
     }
     
     // Generate tokens
@@ -113,11 +116,11 @@ export async function refreshToken(rawRefreshToken: string) {
     try {
       payload = verifyRefreshToken(rawRefreshToken);
     } catch {
-      throw new Error('Invalid refresh token');
+      throw new UnauthorizedError('Invalid refresh token');
     }
 
     if (payload.type !== 'refresh') {
-      throw new Error('Invalid token type');
+      throw new UnauthorizedError('Invalid token type');
     }
 
     // Check if this token exists in the database (not revoked)
@@ -131,7 +134,7 @@ export async function refreshToken(rawRefreshToken: string) {
       });
 
     if (!stored || stored.expiresAt < new Date()) {
-      throw new Error('Refresh token expired or revoked');
+      throw new UnauthorizedError('Refresh token expired or revoked');
     }
 
     // Get the user
@@ -140,7 +143,7 @@ export async function refreshToken(rawRefreshToken: string) {
     });
 
     if (!user || !user.isActive) {
-      throw new Error('User not found or inactive');
+      throw new NotFoundError('User not found or inactive');
     }
 
     // Rotate: delete the old token, create a new one
